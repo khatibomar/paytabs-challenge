@@ -59,7 +59,7 @@ go run ./cmd/api/v1/... -port=8855
 ```
 ## Endpoints
 ### Account
-### List all accounts
+#### List all accounts
 Since we seeded 500 accounts into our store, we have 500 account by default
 ```
 curl --location 'http://localhost:8855/v1/accounts/'
@@ -85,7 +85,7 @@ curl --location 'http://localhost:8855/v1/accounts/2a3e1307-0c09-47fe-b6e5-ce863
 ![image](https://github.com/khatibomar/paytabs-challenge/assets/35725554/946e8e14-da14-4a55-929a-7f7b89615276)
 > change guid to get info for different account
 
-### Deposit and Withdraw
+#### Deposit
 ```bash
 curl --location 'http://localhost:8855/v1/deposit' \
 --header 'Content-Type: application/json' \
@@ -97,7 +97,7 @@ curl --location 'http://localhost:8855/v1/deposit' \
 ![image](https://github.com/khatibomar/paytabs-challenge/assets/35725554/bbbb85a6-be57-4212-9361-5eb8acd05c79)
 Dynava now have +100 on her old balance, let's take it away from her 3:)
 
-### Deposit and Withdraw
+### Withdraw
 ```bash
 curl --location 'http://localhost:8855/v1/withdraw' \
 --header 'Content-Type: application/json' \
@@ -110,3 +110,11 @@ Dynava now have +100 on her old balance
 ![image](https://github.com/khatibomar/paytabs-challenge/assets/35725554/cbb88689-71ab-4a95-83ed-0ba31a38eecc)
 
 That's our simple API, have fun and try to break it by passing negative amounts, or wrong GUIDs
+
+## Improvements
+1- Add more endpoints ( Full CRUD ) operations
+2- Write more concurrent tests
+3- Use repository pattern with real database
+4- Make it more secure ( rate limiting, SSL, AUTH )
+5- Make it distributed ( by adding service discovery, coordination, and replicating )
+6- Create CLI menu App to be easier to test by collaborators :) or web frontend if I have time
