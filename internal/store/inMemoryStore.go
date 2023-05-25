@@ -67,3 +67,7 @@ func (s *InMemoryStore) All() []*datastructure.Account {
 	}
 	return accounts
 }
+
+func (s *InMemoryStore) Seed() error {
+	return nil
+}
