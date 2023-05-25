@@ -1,12 +1,50 @@
 package main
 
-import "fmt"
+import (
+	"flag"
+	"sync"
+
+	"github.com/khatibomar/paytabs-challenge/internal/store"
+	"go.uber.org/zap"
+)
 
 type Config struct {
-	Port int
+	port int
 	env  string
 }
 
+type application struct {
+	config Config
+	logger *zap.SugaredLogger
+	store  store.Store
+	wg     sync.WaitGroup
+}
+
+const version = "1.0.0"
+
 func main() {
-	fmt.Println("Hello, Paytabs!")
+	var cfg Config
+	flag.IntVar(&cfg.port, "port", 4000, "API server port")
+	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
+	flag.Parse()
+
+	logger := zap.NewExample().Sugar()
+	defer logger.Sync()
+
+	s := store.New()
+	logger.Info("Ingesting accounts into the store...")
+	err := s.Seed("./data/accounts-mock.json")
+	if err != nil {
+		logger.Fatal(err)
+	}
+	logger.Info("Ingesting accounts done...")
+	app := &application{
+		config: cfg,
+		logger: logger,
+		store:  s,
+	}
+
+	if err := app.serve(); err != nil {
+		app.logger.Fatal(err)
+	}
 }

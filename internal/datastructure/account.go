@@ -40,3 +40,8 @@ func (a *Account) Withdraw(amount float64) error {
 	a.Balance -= amount
 	return nil
 }
+
+func (a *Account) ValidateAccount() error {
+	v := validator.New()
+	return v.ValidateBalance(a.Balance)
+}

@@ -1,15 +1,11 @@
 package validator
 
 import (
-	"fmt"
-
 	"github.com/google/uuid"
+	"github.com/khatibomar/paytabs-challenge/internal/customerrors"
 )
 
-var (
-	ErrNegativeBalanceNotAllowed           = fmt.Errorf("you can't have negative balance")
-	ErrNegativeTransactionAmountNotAllowed = fmt.Errorf("transactions amount should always be positive")
-)
+var ()
 
 type Validator struct {
 }
@@ -25,14 +21,14 @@ func (v *Validator) ValidateGuid(guid string) error {
 
 func (v *Validator) ValidateBalance(balance float64) error {
 	if balance < 0 {
-		return ErrNegativeBalanceNotAllowed
+		return customerrors.ErrNegativeBalanceNotAllowed
 	}
 	return nil
 }
 
 func (v *Validator) ValidateTransactionAmount(amount float64) error {
 	if amount < 0 {
-		return ErrNegativeTransactionAmountNotAllowed
+		return customerrors.ErrNegativeTransactionAmountNotAllowed
 	}
 	return nil
 }

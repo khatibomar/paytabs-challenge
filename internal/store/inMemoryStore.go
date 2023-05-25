@@ -1,18 +1,13 @@
 package store
 
 import (
-	"fmt"
 	"strconv"
 	"sync"
 
+	"github.com/khatibomar/paytabs-challenge/internal/customerrors"
 	"github.com/khatibomar/paytabs-challenge/internal/datastructure"
 	parser "github.com/khatibomar/paytabs-challenge/internal/parser"
 	"github.com/khatibomar/paytabs-challenge/internal/validator"
-)
-
-var (
-	ErrAccountDoesNotExist = fmt.Errorf("account does not exist")
-	ErrAccountAlreadyExist = fmt.Errorf("account already exist")
 )
 
 type InMemoryStore struct {
@@ -43,7 +38,7 @@ func (s *InMemoryStore) Add(account *datastructure.Account) error {
 
 	_, err = s.Get(account.Guid)
 	if err == nil {
-		return ErrAccountAlreadyExist
+		return customerrors.ErrAccountAlreadyExist
 	}
 
 	s.accounts[account.Guid] = account
@@ -53,7 +48,7 @@ func (s *InMemoryStore) Add(account *datastructure.Account) error {
 func (s *InMemoryStore) Get(guid string) (*datastructure.Account, error) {
 	account := s.accounts[guid]
 	if account == nil {
-		return nil, ErrAccountDoesNotExist
+		return nil, customerrors.ErrAccountDoesNotExist
 	}
 	return account, nil
 }
@@ -64,23 +59,21 @@ func (s *InMemoryStore) Count() int {
 
 func (s *InMemoryStore) All() []*datastructure.Account {
 	var accounts []*datastructure.Account
-	for _, account := range s.accounts {
-		accounts = append(accounts, account)
+	for key := range s.accounts {
+		accounts = append(accounts, s.accounts[key])
 	}
 	return accounts
 }
 
-func (s *InMemoryStore) Seed() error {
+func (s *InMemoryStore) Seed(path string) error {
 	p := parser.New()
-	path := "../../data/accounts-mock.json"
 	rawAccounts, err := p.ParseJson(path)
 	if err != nil {
 		return err
 	}
 
-	account := datastructure.Account{}
-
 	for _, rawAccount := range rawAccounts {
+		account := datastructure.Account{}
 		account.Guid = rawAccount.ID
 		account.Name = rawAccount.Name
 		account.Balance, err = strconv.ParseFloat(rawAccount.Balance, 64)
@@ -92,5 +85,6 @@ func (s *InMemoryStore) Seed() error {
 			return err
 		}
 	}
+
 	return nil
 }

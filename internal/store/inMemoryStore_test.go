@@ -5,9 +5,9 @@ import (
 
 	faker "github.com/brianvoe/gofakeit/v6"
 	"github.com/google/uuid"
+	"github.com/khatibomar/paytabs-challenge/internal/customerrors"
 	"github.com/khatibomar/paytabs-challenge/internal/datastructure"
 	"github.com/khatibomar/paytabs-challenge/internal/store"
-	"github.com/khatibomar/paytabs-challenge/internal/validator"
 	"github.com/stretchr/testify/require"
 )
 
@@ -37,7 +37,7 @@ func TestInMemoryStoreWithDuplicateGuid(t *testing.T) {
 	err := s.Add(account)
 	require.NoError(t, err)
 	err = s.Add(account)
-	require.ErrorIs(t, err, store.ErrAccountAlreadyExist)
+	require.ErrorIs(t, err, customerrors.ErrAccountAlreadyExist)
 }
 
 func TestInMemoryStoreWithNegativeBalance(t *testing.T) {
@@ -51,7 +51,7 @@ func TestInMemoryStoreWithNegativeBalance(t *testing.T) {
 
 	for _, account := range validTests {
 		err := s.Add(account)
-		require.ErrorIs(t, err, validator.ErrNegativeBalanceNotAllowed)
+		require.ErrorIs(t, err, customerrors.ErrNegativeBalanceNotAllowed)
 	}
 }
 
@@ -87,12 +87,12 @@ func TestInMemoryStoreGetNotExistingAccount(t *testing.T) {
 	require.NoError(t, err)
 
 	_, err = s.Get(uuid.New().String())
-	require.ErrorIs(t, err, store.ErrAccountDoesNotExist)
+	require.ErrorIs(t, err, customerrors.ErrAccountDoesNotExist)
 }
 
 func TestStoreSeed(t *testing.T) {
 	s := store.New()
-	err := s.Seed()
+	err := s.Seed("../../data/accounts-mock.json")
 	require.NoError(t, err)
 	require.Equal(t, s.Count(), 500)
 }

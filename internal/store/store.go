@@ -1,6 +1,9 @@
 package store
 
+import "github.com/khatibomar/paytabs-challenge/internal/datastructure"
+
 type Store interface {
-	Add(string, string, float64) error
-	Get(string) error
+	Add(*datastructure.Account) error
+	Get(string) (*datastructure.Account, error)
+	All() []*datastructure.Account
 }
