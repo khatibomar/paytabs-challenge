@@ -1,9 +1,10 @@
-package datastructure
+package store
 
 import (
 	"fmt"
 	"sync"
 
+	"github.com/khatibomar/paytabs-challenge/internal/datastructure"
 	"github.com/khatibomar/paytabs-challenge/internal/validator"
 )
 
@@ -12,18 +13,19 @@ var (
 	ErrAccountAlreadyExist = fmt.Errorf("account already exist")
 )
 
-type Store struct {
+type InMemoryStore struct {
 	mu       sync.Mutex
-	Accounts map[string]*Account
+	Accounts map[string]*datastructure.Account
 }
 
-func New() *Store {
-	return &Store{}
+func New() *InMemoryStore {
+	return &InMemoryStore{}
 }
 
-func (s *Store) Add(guid, name string, balance float64) error {
+func (s *InMemoryStore) Add(guid, name string, balance float64) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	validator := validator.New()
 
 	err := validator.ValidateGuid(guid)
 	if err != nil {
@@ -40,7 +42,7 @@ func (s *Store) Add(guid, name string, balance float64) error {
 		return ErrAccountAlreadyExist
 	}
 
-	account := &Account{
+	account := &datastructure.Account{
 		Guid:    guid,
 		Name:    name,
 		Balance: balance,
@@ -49,7 +51,7 @@ func (s *Store) Add(guid, name string, balance float64) error {
 	return nil
 }
 
-func (s *Store) Get(guid string) (*Account, error) {
+func (s *InMemoryStore) Get(guid string) (*datastructure.Account, error) {
 	account := s.Accounts[guid]
 	if account == nil {
 		return nil, ErrAccountDoesNotExist
@@ -57,6 +59,6 @@ func (s *Store) Get(guid string) (*Account, error) {
 	return account, nil
 }
 
-func (s *Store) Count() int {
+func (s *InMemoryStore) Count() int {
 	return len(s.Accounts)
 }
