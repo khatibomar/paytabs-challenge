@@ -15,11 +15,13 @@ var (
 
 type InMemoryStore struct {
 	mu       sync.Mutex
-	Accounts map[string]*datastructure.Account
+	accounts map[string]*datastructure.Account
 }
 
 func New() *InMemoryStore {
-	return &InMemoryStore{}
+	return &InMemoryStore{
+		accounts: make(map[string]*datastructure.Account),
+	}
 }
 
 func (s *InMemoryStore) Add(guid, name string, balance float64) error {
@@ -47,12 +49,12 @@ func (s *InMemoryStore) Add(guid, name string, balance float64) error {
 		Name:    name,
 		Balance: balance,
 	}
-	s.Accounts[guid] = account
+	s.accounts[guid] = account
 	return nil
 }
 
 func (s *InMemoryStore) Get(guid string) (*datastructure.Account, error) {
-	account := s.Accounts[guid]
+	account := s.accounts[guid]
 	if account == nil {
 		return nil, ErrAccountDoesNotExist
 	}
@@ -60,5 +62,13 @@ func (s *InMemoryStore) Get(guid string) (*datastructure.Account, error) {
 }
 
 func (s *InMemoryStore) Count() int {
-	return len(s.Accounts)
+	return len(s.accounts)
+}
+
+func (s *InMemoryStore) All() []*datastructure.Account {
+	var accounts []*datastructure.Account
+	for _, account := range s.accounts {
+		accounts = append(accounts, account)
+	}
+	return accounts
 }
