@@ -78,3 +78,73 @@ func (app *application) listAccountsHandler(w http.ResponseWriter, r *http.Reque
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) depositAccountsHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		ID      string  `json:"id"`
+		Balance float64 `json:"balance,omitempty"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	account, err := app.store.Get(input.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, customerrors.ErrAccountDoesNotExist):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = account.Deposit(input.Balance)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"account": account}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
+
+func (app *application) withdrawAccountsHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		ID      string  `json:"id"`
+		Balance float64 `json:"balance,omitempty"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	account, err := app.store.Get(input.ID)
+	if err != nil {
+		switch {
+		case errors.Is(err, customerrors.ErrAccountDoesNotExist):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = account.Withdraw(input.Balance)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"account": account}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}

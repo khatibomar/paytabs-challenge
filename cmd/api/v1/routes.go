@@ -17,5 +17,8 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/accounts", app.createAccountHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/accounts/:id", app.showAccountHandler)
 
+	router.HandlerFunc(http.MethodPost, "/v1/deposit", app.depositAccountsHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/withdraw", app.withdrawAccountsHandler)
+
 	return router
 }
