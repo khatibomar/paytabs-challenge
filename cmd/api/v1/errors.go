@@ -1,18 +1,22 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"go.uber.org/zap"
+)
 
 func (app *application) errorResponse(w http.ResponseWriter, r *http.Request, status int, message interface{}) {
 	env := envelope{"error": message}
 
 	err := app.writeJSON(w, status, env, nil)
 	if err != nil {
-		app.logger.Error(r, err)
+		app.logger.Error(err.Error(), zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
 func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Request, err error) {
-	app.logger.Error(r, err)
+	app.logger.Error(err.Error(), zap.Error(err))
 
 	message := "the server encountered a problem and could not process your request"
 	app.errorResponse(w, r, http.StatusInternalServerError, message)

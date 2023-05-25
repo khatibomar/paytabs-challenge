@@ -15,7 +15,7 @@ type Config struct {
 
 type application struct {
 	config Config
-	logger *zap.SugaredLogger
+	logger *zap.Logger
 	store  store.Store
 	wg     sync.WaitGroup
 }
@@ -28,14 +28,19 @@ func main() {
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 	flag.Parse()
 
-	logger := zap.NewExample().Sugar()
+	var logger *zap.Logger
+	if cfg.env == "development" {
+		logger = zap.Must(zap.NewDevelopment())
+	} else {
+		logger = zap.Must(zap.NewProduction())
+	}
 	defer logger.Sync()
 
 	s := store.New()
 	logger.Info("Ingesting accounts into the store...")
 	err := s.Seed("./data/accounts-mock.json")
 	if err != nil {
-		logger.Fatal(err)
+		logger.Fatal(err.Error())
 	}
 	logger.Info("Ingesting accounts done...")
 	app := &application{
@@ -45,6 +50,6 @@ func main() {
 	}
 
 	if err := app.serve(); err != nil {
-		app.logger.Fatal(err)
+		app.logger.Fatal(err.Error())
 	}
 }

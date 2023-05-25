@@ -9,6 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 func (app *application) serve() error {
@@ -24,9 +26,9 @@ func (app *application) serve() error {
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		s := <-quit
 
-		app.logger.Info("caught signal", map[string]string{
-			"signal": s.String(),
-		})
+		app.logger.Info("caught signal",
+			zap.String("signal", s.String()),
+		)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
@@ -36,17 +38,17 @@ func (app *application) serve() error {
 			shutdownError <- err
 		}
 
-		app.logger.Info("completing background tasks", map[string]string{
-			"addr": srv.Addr,
-		})
+		app.logger.Info("completing background tasks",
+			zap.String("addr", srv.Addr),
+		)
 		app.wg.Wait()
 		shutdownError <- nil
 	}()
 
-	app.logger.Info("starting server", map[string]string{
-		"addr": srv.Addr,
-		"env":  app.config.env,
-	})
+	app.logger.Info("starting server",
+		zap.String("addr", srv.Addr),
+		zap.String("env", app.config.env),
+	)
 
 	err := srv.ListenAndServe()
 	if !errors.Is(err, http.ErrServerClosed) {
@@ -58,9 +60,9 @@ func (app *application) serve() error {
 		return err
 	}
 
-	app.logger.Info("stopped server", map[string]string{
-		"addr": srv.Addr,
-	})
+	app.logger.Info("stopped server",
+		zap.String("addr", srv.Addr),
+	)
 
 	return nil
 }
