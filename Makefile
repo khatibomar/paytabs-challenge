@@ -40,3 +40,8 @@ go/list:
 .PHONY: test
 test:
 	go test -race ./...
+
+## run/v1: will run the server v1
+.PHONY: run/v1
+run/v1:
+	go run ./...
