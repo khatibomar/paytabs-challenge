@@ -41,7 +41,7 @@ go/list:
 test:
 	go test -race ./...
 
-## run/v1: will run the server v1
-.PHONY: run/v1
+## run/api/v1: will run the api v1
+.PHONY: run/api/v1
 run/v1:
-	go run ./...
+	go run ./cmd/api/v1/...
