@@ -1,10 +1,12 @@
 package datastructure
 
-import "sync"
+import (
+	"sync"
+)
 
 type Account struct {
 	mu      sync.Mutex
 	Guid    string
-	name    string
-	balance float64
+	Name    string
+	Balance float64
 }
