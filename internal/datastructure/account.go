@@ -2,6 +2,8 @@ package datastructure
 
 import (
 	"sync"
+
+	"github.com/khatibomar/paytabs-challenge/internal/validator"
 )
 
 type Account struct {
@@ -9,4 +11,39 @@ type Account struct {
 	Guid    string
 	Name    string
 	Balance float64
+}
+
+func (a *Account) Deposit(amount float64) error {
+	err := a.validate(amount)
+	if err != nil {
+		return err
+	}
+
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.Balance += amount
+	return nil
+}
+
+func (a *Account) Withdraw(amount float64) error {
+	err := a.validate(amount)
+	if err != nil {
+		return err
+	}
+
+	a.mu.Lock()
+	defer a.mu.Unlock()
+
+	a.Balance -= amount
+	return nil
+}
+
+func (a *Account) validate(amount float64) error {
+	validator := validator.New()
+	err := validator.ValidateBalance(a.Balance - amount)
+	if err != nil {
+		return err
+	}
+	return nil
 }
