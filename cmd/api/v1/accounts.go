@@ -81,8 +81,8 @@ func (app *application) listAccountsHandler(w http.ResponseWriter, r *http.Reque
 
 func (app *application) depositAccountsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		ID      string  `json:"id"`
-		Balance float64 `json:"balance,omitempty"`
+		ID     string  `json:"id"`
+		Amount float64 `json:"amount"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -102,7 +102,7 @@ func (app *application) depositAccountsHandler(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	err = account.Deposit(input.Balance)
+	err = account.Deposit(input.Amount)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
@@ -116,8 +116,8 @@ func (app *application) depositAccountsHandler(w http.ResponseWriter, r *http.Re
 
 func (app *application) withdrawAccountsHandler(w http.ResponseWriter, r *http.Request) {
 	var input struct {
-		ID      string  `json:"id"`
-		Balance float64 `json:"balance,omitempty"`
+		ID     string  `json:"id"`
+		Amount float64 `json:"amount"`
 	}
 
 	err := app.readJSON(w, r, &input)
@@ -137,7 +137,7 @@ func (app *application) withdrawAccountsHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	err = account.Withdraw(input.Balance)
+	err = account.Withdraw(input.Amount)
 	if err != nil {
 		app.badRequestResponse(w, r, err)
 		return
