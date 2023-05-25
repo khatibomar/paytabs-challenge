@@ -36,3 +36,27 @@ func (v *Validator) ValidateTransactionAmount(amount float64) error {
 	}
 	return nil
 }
+
+func (v *Validator) ValidateDeposit(balance, amount float64) error {
+	err := v.ValidateTransactionAmount(amount)
+	if err != nil {
+		return err
+	}
+	err = v.ValidateBalance(balance + amount)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (v *Validator) ValidateWithdrawal(balance, amount float64) error {
+	err := v.ValidateTransactionAmount(amount)
+	if err != nil {
+		return err
+	}
+	err = v.ValidateBalance(balance - amount)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -14,7 +14,8 @@ type Account struct {
 }
 
 func (a *Account) Deposit(amount float64) error {
-	err := a.validate(amount)
+	v := validator.New()
+	err := v.ValidateDeposit(a.Balance, amount)
 	if err != nil {
 		return err
 	}
@@ -27,7 +28,8 @@ func (a *Account) Deposit(amount float64) error {
 }
 
 func (a *Account) Withdraw(amount float64) error {
-	err := a.validate(amount)
+	v := validator.New()
+	err := v.ValidateWithdrawal(a.Balance, amount)
 	if err != nil {
 		return err
 	}
@@ -36,14 +38,5 @@ func (a *Account) Withdraw(amount float64) error {
 	defer a.mu.Unlock()
 
 	a.Balance -= amount
-	return nil
-}
-
-func (a *Account) validate(amount float64) error {
-	validator := validator.New()
-	err := validator.ValidateBalance(a.Balance - amount)
-	if err != nil {
-		return err
-	}
 	return nil
 }
