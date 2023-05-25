@@ -113,8 +113,13 @@ That's our simple API, have fun and try to break it by passing negative amounts,
 
 ## Improvements
 1- Add more endpoints ( Full CRUD ) operations
+
 2- Write more concurrent tests
+
 3- Use repository pattern with real database
+
 4- Make it more secure ( rate limiting, SSL, AUTH )
+
 5- Make it distributed ( by adding service discovery, coordination, and replicating )
+
 6- Create CLI menu App to be easier to test by collaborators :) or web frontend if I have time
