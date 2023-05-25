@@ -27,7 +27,7 @@ func (v *Validator) ValidateBalance(balance float64) error {
 }
 
 func (v *Validator) ValidateTransactionAmount(amount float64) error {
-	if amount < 0 {
+	if amount <= 0 {
 		return customerrors.ErrNegativeTransactionAmountNotAllowed
 	}
 	return nil
