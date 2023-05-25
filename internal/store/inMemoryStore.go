@@ -2,9 +2,11 @@ package store
 
 import (
 	"fmt"
+	"strconv"
 	"sync"
 
 	"github.com/khatibomar/paytabs-challenge/internal/datastructure"
+	parser "github.com/khatibomar/paytabs-challenge/internal/parser"
 	"github.com/khatibomar/paytabs-challenge/internal/validator"
 )
 
@@ -69,5 +71,26 @@ func (s *InMemoryStore) All() []*datastructure.Account {
 }
 
 func (s *InMemoryStore) Seed() error {
+	p := parser.New()
+	path := "../../data/accounts-mock.json"
+	rawAccounts, err := p.ParseJson(path)
+	if err != nil {
+		return err
+	}
+
+	account := datastructure.Account{}
+
+	for _, rawAccount := range rawAccounts {
+		account.Guid = rawAccount.ID
+		account.Name = rawAccount.Name
+		account.Balance, err = strconv.ParseFloat(rawAccount.Balance, 64)
+		if err != nil {
+			return err
+		}
+		err = s.Add(&account)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }

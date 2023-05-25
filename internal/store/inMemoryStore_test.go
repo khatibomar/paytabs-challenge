@@ -89,3 +89,10 @@ func TestInMemoryStoreGetNotExistingAccount(t *testing.T) {
 	_, err = s.Get(uuid.New().String())
 	require.ErrorIs(t, err, store.ErrAccountDoesNotExist)
 }
+
+func TestStoreSeed(t *testing.T) {
+	s := store.New()
+	err := s.Seed()
+	require.NoError(t, err)
+	require.Equal(t, s.Count(), 500)
+}
