@@ -24,32 +24,27 @@ func New() *InMemoryStore {
 	}
 }
 
-func (s *InMemoryStore) Add(guid, name string, balance float64) error {
+func (s *InMemoryStore) Add(account *datastructure.Account) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	validator := validator.New()
 
-	err := validator.ValidateGuid(guid)
+	err := validator.ValidateGuid(account.Guid)
 	if err != nil {
 		return err
 	}
 
-	err = validator.ValidateBalance(balance)
+	err = validator.ValidateBalance(account.Balance)
 	if err != nil {
 		return err
 	}
 
-	_, err = s.Get(guid)
+	_, err = s.Get(account.Guid)
 	if err == nil {
 		return ErrAccountAlreadyExist
 	}
 
-	account := &datastructure.Account{
-		Guid:    guid,
-		Name:    name,
-		Balance: balance,
-	}
-	s.accounts[guid] = account
+	s.accounts[account.Guid] = account
 	return nil
 }
 
