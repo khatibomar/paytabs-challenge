@@ -41,6 +41,27 @@ func (a *Account) Withdraw(amount float64) error {
 	return nil
 }
 
+func (a *Account) Transfer(toAccount *Account, amount float64) error {
+	v := validator.New()
+	err := v.ValidateWithdrawal(a.Balance, amount)
+	if err != nil {
+		return err
+	}
+	err = v.ValidateDeposit(toAccount.Balance, amount)
+	if err != nil {
+		return err
+	}
+
+	a.mu.Lock()
+	toAccount.mu.Lock()
+	defer a.mu.Unlock()
+	defer toAccount.mu.Unlock()
+
+	a.Balance -= amount
+	toAccount.Balance += amount
+	return nil
+}
+
 func (a *Account) ValidateAccount() error {
 	v := validator.New()
 	return v.ValidateBalance(a.Balance)

@@ -148,3 +148,50 @@ func (app *application) withdrawAccountsHandler(w http.ResponseWriter, r *http.R
 		app.serverErrorResponse(w, r, err)
 	}
 }
+
+func (app *application) transferTransactionHandler(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		FromID string  `json:"from"`
+		ToID   string  `json:"to"`
+		Amount float64 `json:"amount"`
+	}
+
+	err := app.readJSON(w, r, &input)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	fromAccount, err := app.store.Get(input.FromID)
+	if err != nil {
+		switch {
+		case errors.Is(err, customerrors.ErrAccountDoesNotExist):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	toAccount, err := app.store.Get(input.FromID)
+	if err != nil {
+		switch {
+		case errors.Is(err, customerrors.ErrAccountDoesNotExist):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	err = fromAccount.Transfer(toAccount, input.Amount)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	err = app.writeJSON(w, http.StatusOK, envelope{"account": fromAccount}, nil)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+	}
+}
