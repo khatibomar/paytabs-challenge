@@ -166,21 +166,26 @@ func (app *application) transferTransactionHandler(w http.ResponseWriter, r *htt
 	if err != nil {
 		switch {
 		case errors.Is(err, customerrors.ErrAccountDoesNotExist):
-			app.notFoundResponse(w, r)
+			app.badRequestResponse(w, r, fmt.Errorf("from account: %w", err))
 		default:
 			app.serverErrorResponse(w, r, err)
 		}
 		return
 	}
 
-	toAccount, err := app.store.Get(input.FromID)
+	toAccount, err := app.store.Get(input.ToID)
 	if err != nil {
 		switch {
 		case errors.Is(err, customerrors.ErrAccountDoesNotExist):
-			app.notFoundResponse(w, r)
+			app.badRequestResponse(w, r, fmt.Errorf("to account: %w", err))
 		default:
 			app.serverErrorResponse(w, r, err)
 		}
+		return
+	}
+
+	if fromAccount == toAccount {
+		app.badRequestResponse(w, r, customerrors.ErrTransferToSameAccount)
 		return
 	}
 
