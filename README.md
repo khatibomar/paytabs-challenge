@@ -111,6 +111,23 @@ Dynava now have +100 on her old balance
 
 That's our simple API, have fun and try to break it by passing negative amounts, or wrong GUIDs
 
+### Transfer
+To transfer between accounts we can use this endpoint
+
+```
+curl --location 'http://localhost:8855/v1/transfer' \
+--header 'Content-Type: application/json' \
+--data '{
+    "from": "2a3e1307-0c09-47fe-b6e5-ce8630c152bf",
+    "to": "1a32c324-0351-43ac-95e9-afc32cc8ed59",
+    "amount": 100
+}'
+``` 
+
+![image](https://github.com/khatibomar/paytabs-challenge/assets/35725554/d65ccb08-d698-41a5-b4a8-82c60c984be6)
+
+as we can see in the image the transfer is successfully completed.
+> if we have proper AUTH we can get the `from` guid from context of the request
 ## Improvements
 1- Add more endpoints ( Full CRUD ) operations
 
@@ -120,6 +137,8 @@ That's our simple API, have fun and try to break it by passing negative amounts,
 
 4- Make it more secure ( rate limiting, SSL, AUTH )
 
-5- Make it distributed ( by adding service discovery, coordination, and replicating )
+5- Implement observability over the API and exposing metrics to grafna dashboard and tracing requests using jaeger
 
-6- Create CLI menu App to be easier to test by collaborators :) or web frontend if I have time
+6- Make it distributed ( by adding service discovery, coordination, and replicating )
+
+7- Create CLI menu App to be easier to test by collaborators :) or web frontend if I have time
